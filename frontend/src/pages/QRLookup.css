@@ -1,0 +1,93 @@
+.qr-lookup {
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(180deg, #2d5016 0%, #1a1a1a 20%);
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lookup-container {
+  max-width: 800px;
+  width: 100%;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 40px;
+  border: 1px solid var(--border-color);
+}
+
+.lookup-container h1 {
+  color: white;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 36px;
+}
+
+.lookup-container > p {
+  color: var(--text-gray);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.scanner-section {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.qr-reader-container {
+  position: relative;
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.qr-reader {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.scan-new-btn {
+  margin-top: 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+.error-message {
+  background-color: #d32f2f;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.qr-result {
+  margin-top: 30px;
+}
+
+.qr-result h2 {
+  color: var(--text-light);
+  margin-bottom: 20px;
+}
+
+.result-card {
+  background-color: var(--bg-darker);
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.result-card p {
+  color: var(--text-light);
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.result-card strong {
+  color: var(--primary-green);
+}
+

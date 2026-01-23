@@ -1,0 +1,73 @@
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import './Login.css';
+
+const Login = () => {
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    const result = await login(formData.email, formData.password);
+    if (result.success) {
+      const roleRoutes = {
+        admin: '/admin',
+        farmer: '/farmer',
+        fpo: '/fpo',
+        user: '/user',
+      };
+      navigate(roleRoutes[result.user?.role] || '/user');
+    } else {
+      setError(result.message);
+    }
+  };
+
+  return (
+    <div className="login-container">
+      <div className="login-card">
+        <h1>QRGanic</h1>
+        <h2>Login</h2>
+        {error && <div className="error-message">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <label className="form-label">Email Address *</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your registered email address"
+            value={formData.email}
+            onChange={handleChange}
+            className="input-field"
+            required
+          />
+          <label className="form-label">Password *</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={handleChange}
+            className="input-field"
+            required
+          />
+          <button type="submit" className="btn-primary">
+            Login
+          </button>
+        </form>
+        <p className="register-link">
+          Don't have an account? <a href="/register">Register</a>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
+

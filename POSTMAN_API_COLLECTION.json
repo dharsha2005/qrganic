@@ -1,0 +1,735 @@
+{
+	"info": {
+		"name": "QRGanic API Collection",
+		"description": "Complete API collection for QRGanic Agricultural E-Commerce Platform",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "qrganic-api"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\",\n  \"address\": \"123 Main St, City\",\n  \"contact\": \"+1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set('authToken', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "me"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Routes",
+			"item": [
+				{
+					"name": "Apply to Become Farmer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"farmingType\": \"Organic Farming\",\n  \"location\": \"Mumbai\",\n  \"cultivatedProducts\": [\"Tomatoes\", \"Potatoes\", \"Onions\"],\n  \"proofDocuments\": [\"doc1.pdf\", \"doc2.pdf\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/apply-farmer",
+							"host": ["{{baseUrl}}"],
+							"path": ["user", "apply-farmer"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Products (User)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["user", "products"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Purchase Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"prod-abc123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/purchase",
+							"host": ["{{baseUrl}}"],
+							"path": ["user", "purchase"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Farmer Routes",
+			"item": [
+				{
+					"name": "Add Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Organic Tomatoes\",\n  \"productType\": \"Food\",\n  \"harvestTime\": \"2024-01-15T00:00:00.000Z\",\n  \"expirationDate\": \"2024-02-15T00:00:00.000Z\",\n  \"dueDate\": \"2024-02-10T00:00:00.000Z\",\n  \"manuresUsed\": \"Organic compost\",\n  \"fertilizersUsed\": \"None\",\n  \"testsDone\": \"Quality test passed\",\n  \"initialPrice\": 50,\n  \"finalPrice\": 45,\n  \"quantity\": \"100kg\",\n  \"quality\": \"Grade A\",\n  \"location\": \"Mumbai\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/farmer/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["farmer", "products"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Farmer Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/farmer/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["farmer", "products"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"finalPrice\": 40,\n  \"quantity\": \"80kg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/farmer/products/:productId",
+							"host": ["{{baseUrl}}"],
+							"path": ["farmer", "products", ":productId"],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "prod-abc123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/farmer/products/:productId",
+							"host": ["{{baseUrl}}"],
+							"path": ["farmer", "products", ":productId"],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "prod-abc123"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FPO Routes",
+			"item": [
+				{
+					"name": "Get Pending Applications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/fpo/applications",
+							"host": ["{{baseUrl}}"],
+							"path": ["fpo", "applications"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Application",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/fpo/applications/:userId/approve",
+							"host": ["{{baseUrl}}"],
+							"path": ["fpo", "applications", ":userId", "approve"],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "customer-abc123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Application",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/fpo/applications/:userId/reject",
+							"host": ["{{baseUrl}}"],
+							"path": ["fpo", "applications", ":userId", "reject"],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "customer-abc123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Farmers Under FPO",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/fpo/farmers",
+							"host": ["{{baseUrl}}"],
+							"path": ["fpo", "farmers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get FPO Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/fpo/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["fpo", "products"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expired Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/fpo/products/expired",
+							"host": ["{{baseUrl}}"],
+							"path": ["fpo", "products", "expired"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Expired Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/fpo/products/:productId/remove",
+							"host": ["{{baseUrl}}"],
+							"path": ["fpo", "products", ":productId", "remove"],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "prod-abc123"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Routes",
+			"item": [
+				{
+					"name": "Get Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/dashboard",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "dashboard"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "users"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All FPOs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/fpos",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "fpos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Farmers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/farmers",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "farmers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add FPO",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Mumbai FPO\",\n  \"email\": \"fpo@example.com\",\n  \"password\": \"fpo123\",\n  \"address\": \"Mumbai, Maharashtra\",\n  \"contact\": \"+1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/fpo",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "fpo"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Farmer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Farmer John\",\n  \"email\": \"farmer@example.com\",\n  \"password\": \"farmer123\",\n  \"address\": \"Mumbai, Maharashtra\",\n  \"contact\": \"+1234567890\",\n  \"fpoId\": \"fpo-abc123\",\n  \"location\": \"Mumbai\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/farmer",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "farmer"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product Routes",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["products"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/:productId",
+							"host": ["{{baseUrl}}"],
+							"path": ["products", ":productId"],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "prod-abc123"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Log Routes",
+			"item": [
+				{
+					"name": "Get All Logs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/logs",
+							"host": ["{{baseUrl}}"],
+							"path": ["logs"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Log",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/logs/:logId",
+							"host": ["{{baseUrl}}"],
+							"path": ["logs", ":logId"],
+							"variable": [
+								{
+									"key": "logId",
+									"value": "log-abc123"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Visual Routes",
+			"item": [
+				{
+					"name": "Get Product Visuals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/visuals/product/:productId",
+							"host": ["{{baseUrl}}"],
+							"path": ["visuals", "product", ":productId"],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "prod-abc123"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/health",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "5000",
+					"path": ["api", "health"]
+				}
+			},
+			"response": []
+		}
+	]
+}
+

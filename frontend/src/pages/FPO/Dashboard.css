@@ -1,0 +1,153 @@
+.fpo-dashboard {
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(180deg, #2d5016 0%, #1a1a1a 20%);
+  padding: 40px 20px;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: white;
+}
+
+.dashboard-header h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.dashboard-header p {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.tabs {
+  max-width: 1400px;
+  margin: 0 auto 30px;
+  display: flex;
+  gap: 10px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  padding: 15px 25px;
+  color: var(--text-gray);
+  font-size: 16px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  color: var(--text-light);
+}
+
+.tab.active {
+  color: var(--primary-green);
+  border-bottom-color: var(--primary-green);
+  font-weight: 600;
+}
+
+.dashboard-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.applications-list,
+.farmers-list,
+.products-list,
+.expired-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.application-card,
+.farmer-card,
+.product-card {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.application-card {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.application-info {
+  flex: 1;
+  margin-bottom: 15px;
+}
+
+.product-info {
+  flex: 1;
+}
+
+.application-info h3,
+.farmer-info h3,
+.product-info h3 {
+  color: var(--text-light);
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.farmer-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.farmer-info {
+  flex: 1;
+}
+
+.farmer-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.application-info p,
+.farmer-info p,
+.product-info p {
+  color: var(--text-gray);
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.application-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.product-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.product-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.product-card.expired {
+  border-color: #d32f2f;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-light);
+  font-size: 18px;
+}
+

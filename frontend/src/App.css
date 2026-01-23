@@ -1,0 +1,136 @@
+.app {
+  min-height: 100vh;
+  background-color: #1a1a1a;
+}
+
+/* Theme Colors */
+:root {
+  --primary-green: #2d5016;
+  --dark-green: #1e350f;
+  --light-green: #3a6a1d;
+  --accent-green: #4a8a25;
+  --bg-dark: #1a1a1a;
+  --bg-darker: #0f0f0f;
+  --text-light: #ffffff;
+  --text-gray: #b0b0b0;
+  --card-bg: #252525;
+  --border-color: #333333;
+}
+
+.btn-primary {
+  background-color: var(--primary-green);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--light-green);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--primary-green);
+  border: 2px solid var(--primary-green);
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary-green);
+  color: white;
+}
+
+.btn-danger {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #b71c1c;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 10px 0;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--primary-green);
+  transform: translateY(-2px);
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-light);
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary-green);
+}
+
+.input-field::placeholder {
+  color: var(--text-gray);
+}
+
+.form-label {
+  display: block;
+  color: var(--text-light);
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+.form-label:first-child {
+  margin-top: 0;
+}
+
+.select-field {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-light);
+  font-size: 16px;
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+.select-field:focus {
+  outline: none;
+  border-color: var(--primary-green);
+}
+
