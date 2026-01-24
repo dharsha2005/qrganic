@@ -4,7 +4,14 @@ import axios from 'axios';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
@@ -21,12 +28,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.get('/api/auth/me');
       setUser(response.data.user);
+      localStorage.setItem('user', JSON.stringify(response.data.user)); // Sync persistent storage
     } catch (error) {
       console.error('Error fetching user:', error);
       // Only logout if token is invalid (401)
       if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setToken(null);
+        setUser(null);
         delete axios.defaults.headers.common['Authorization'];
       }
     } finally {
@@ -40,7 +50,10 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post('/api/auth/login', { email, password });
       console.log('🟢 AuthContext: Login response:', response.data);
       const { token: newToken, user: userData } = response.data;
+
       localStorage.setItem('token', newToken);
+      localStorage.setItem('user', JSON.stringify(userData)); // Persist user
+
       setToken(newToken);
       setUser(userData);
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
@@ -59,7 +72,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.post('/api/auth/register', userData);
       const { token: newToken, user: newUser } = response.data;
+
       localStorage.setItem('token', newToken);
+      localStorage.setItem('user', JSON.stringify(newUser)); // Persist user
+
       setToken(newToken);
       setUser(newUser);
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
@@ -74,6 +90,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setToken(null);
     setUser(null);
     delete axios.defaults.headers.common['Authorization'];
