@@ -61,7 +61,15 @@ app.get('/api/health', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || '0.0.0.0';
+const HOST = '0.0.0.0'; // Bind to all interfaces for Render
+
+// Serve static files from frontend
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+});
 
 app.listen(PORT, HOST, () => {
   console.log(`🚀 Server running on port ${PORT}`);

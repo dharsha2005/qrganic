@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Register.css';
 
 const Register = () => {
-  console.log('Register component loaded');
+  console.log('🔴 REGISTER COMPONENT RENDERED');
   
   const [formData, setFormData] = useState({
     name: '',
@@ -112,7 +112,7 @@ const Register = () => {
           </button>
         </form>
         <p className="login-link">
-          Already have an account? <a href="/login">Login</a>
+          Already have an account? <Link to="/login">Login</Link>
         </p>
       </div>
     </div>

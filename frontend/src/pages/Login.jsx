@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Login.css';
 
 const Login = () => {
-  console.log('Login component loaded');
+  console.log('🔵 LOGIN COMPONENT RENDERED');
   
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -64,7 +64,7 @@ const Login = () => {
           </button>
         </form>
         <p className="register-link">
-          Don't have an account? <a href="/register">Register</a>
+          Don't have an account? <Link to="/register">Register</Link>
         </p>
       </div>
     </div>
