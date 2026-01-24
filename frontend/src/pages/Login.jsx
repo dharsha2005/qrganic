@@ -18,16 +18,24 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    console.log('🔵 Attempting login with:', formData.email);
+    
     const result = await login(formData.email, formData.password);
+    console.log('🔵 Login result:', result);
+    
     if (result.success) {
+      console.log('🔵 Login successful, user:', result.user);
       const roleRoutes = {
         admin: '/admin',
         farmer: '/farmer',
         fpo: '/fpo',
         user: '/user',
       };
-      navigate(roleRoutes[result.user?.role] || '/user');
+      const targetRoute = roleRoutes[result.user?.role] || '/user';
+      console.log('🔵 Navigating to:', targetRoute);
+      navigate(targetRoute);
     } else {
+      console.log('🔵 Login failed:', result.message);
       setError(result.message);
     }
   };

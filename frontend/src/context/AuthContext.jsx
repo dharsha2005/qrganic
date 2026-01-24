@@ -32,14 +32,18 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      console.log('🟢 AuthContext: Making login request to /api/auth/login');
       const response = await axios.post('/api/auth/login', { email, password });
+      console.log('🟢 AuthContext: Login response:', response.data);
       const { token: newToken, user: userData } = response.data;
       localStorage.setItem('token', newToken);
       setToken(newToken);
       setUser(userData);
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      console.log('🟢 AuthContext: Login successful, user set to:', userData);
       return { success: true, user: userData };
     } catch (error) {
+      console.log('🟢 AuthContext: Login error:', error.response?.data);
       return {
         success: false,
         message: error.response?.data?.message || 'Login failed',

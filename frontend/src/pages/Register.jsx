@@ -32,12 +32,17 @@ const Register = () => {
     }
 
     const { confirmPassword, ...registerData } = formData;
+    console.log('🔴 Attempting registration with:', registerData.email);
+    
     // Always register as 'user' by default
     const result = await register({ ...registerData, role: 'user' });
+    console.log('🔴 Register result:', result);
 
     if (result.success) {
+      console.log('🔴 Registration successful, navigating to /user');
       navigate('/user');
     } else {
+      console.log('🔴 Registration failed:', result.message);
       setError(result.message);
     }
   };
