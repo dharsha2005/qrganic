@@ -23,8 +23,12 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data.user);
     } catch (error) {
       console.error('Error fetching user:', error);
-      localStorage.removeItem('token');
-      setToken(null);
+      // Only logout if token is invalid (401)
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('token');
+        setToken(null);
+        delete axios.defaults.headers.common['Authorization'];
+      }
     } finally {
       setLoading(false);
     }

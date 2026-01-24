@@ -26,7 +26,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://qrganic-1i1f.onrender.com', 'http://localhost:5173'],
+  origin: true, // Allow any origin temporarily for debugging
   credentials: true
 }));
 app.use(express.json());
