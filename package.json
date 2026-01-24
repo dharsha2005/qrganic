@@ -9,10 +9,16 @@
     "dev-backend": "cd backend && npm run dev",
     "dev-frontend": "cd frontend && npm run dev",
     "build-frontend": "cd frontend && npm run build",
-    "start-backend": "cd backend && npm start"
+    "start-backend": "cd backend && npm start",
+    "build": "npm run install-all && npm run build-frontend",
+    "start": "npm run start-backend"
   },
-  "keywords": ["mern", "agriculture", "ecommerce", "qrganic"],
+  "keywords": [
+    "mern",
+    "agriculture",
+    "ecommerce",
+    "qrganic"
+  ],
   "author": "",
   "license": "ISC"
 }
-
