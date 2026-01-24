@@ -28,17 +28,32 @@ const Cart = () => {
         const newQty = currentQty + change;
         if (newQty < 1) return;
 
+        // Optimistic UI Update: Update state immediately
+        const previousCart = { ...cart };
+        setCart((prev) => ({
+            ...prev,
+            items: prev.items.map((item) =>
+                item.product._id === itemId
+                    ? { ...item, quantity: newQty }
+                    : item
+            ),
+        }));
+
         try {
-            // itemId is the PRODUCT ID (ObjectId) based on my backend implementation
+            // itemId is the PRODUCT ID
             const res = await axios.put(`/api/cart/${itemId}`, { quantity: newQty });
+            // Sync with server response to be sure
             setCart(res.data.cart);
         } catch (error) {
+            // Revert on failure
+            console.error('Update quantity failed:', error);
+            setCart(previousCart);
             alert('Failed to update quantity');
         }
     };
 
     const handleRemove = async (itemId) => {
-        // optimistically remove item from UI
+        // Optimistic UI Update: Remove item immediately
         const previousCart = { ...cart };
         setCart((prev) => ({
             ...prev,
@@ -48,17 +63,13 @@ const Cart = () => {
         try {
             const res = await axios.delete(`/api/cart/${itemId}`);
             if (res.data.success) {
-                // Determine if we should use server response or keep local state
-                // Server response is safer.
                 setCart(res.data.cart);
             } else {
-                // Revert if success is false but no error thrown
                 setCart(previousCart);
                 alert('Failed to remove item');
             }
         } catch (error) {
             console.error('Remove error:', error);
-            // Revert state on error
             setCart(previousCart);
             alert('Failed to remove item');
         }
@@ -106,6 +117,7 @@ const Cart = () => {
         );
     }
 
+    // Calculate total safely based on current state (which might be optimistic)
     const total = cart.items.reduce((sum, item) => sum + (item.product.finalPrice * item.quantity), 0);
 
     return (
