@@ -38,11 +38,43 @@ const Cart = () => {
     };
 
     const handleRemove = async (itemId) => {
+        // optimistically remove item from UI
+        const previousCart = { ...cart };
+        setCart((prev) => ({
+            ...prev,
+            items: prev.items.filter((item) => item.product._id !== itemId),
+        }));
+
         try {
             const res = await axios.delete(`/api/cart/${itemId}`);
-            setCart(res.data.cart);
+            if (res.data.success) {
+                // Determine if we should use server response or keep local state
+                // Server response is safer.
+                setCart(res.data.cart);
+            } else {
+                // Revert if success is false but no error thrown
+                setCart(previousCart);
+                alert('Failed to remove item');
+            }
         } catch (error) {
+            console.error('Remove error:', error);
+            // Revert state on error
+            setCart(previousCart);
             alert('Failed to remove item');
+        }
+    };
+
+    const handleClearCart = async () => {
+        if (!window.confirm('Are you sure you want to remove all items from your cart?')) return;
+
+        try {
+            const res = await axios.delete('/api/cart');
+            if (res.data.success) {
+                setCart(res.data.cart);
+            }
+        } catch (error) {
+            console.error('Clear cart error:', error);
+            alert('Failed to clear cart');
         }
     };
 
@@ -112,13 +144,22 @@ const Cart = () => {
                         <span>Total Price:</span>
                         <span>₹{total}</span>
                     </div>
-                    <button
-                        onClick={handleCheckout}
-                        disabled={processing}
-                        className="btn-checkout"
-                    >
-                        {processing ? 'Processing...' : 'Proceed to Checkout'}
-                    </button>
+                    <div className="checkout-actions">
+                        <button
+                            onClick={handleClearCart}
+                            className="btn-clear-cart"
+                            style={{ marginRight: '10px', backgroundColor: '#e74c3c', color: 'white', border: 'none', padding: '10px 15px', borderRadius: '5px', cursor: 'pointer' }}
+                        >
+                            Clear Cart
+                        </button>
+                        <button
+                            onClick={handleCheckout}
+                            disabled={processing}
+                            className="btn-checkout"
+                        >
+                            {processing ? 'Processing...' : 'Proceed to Checkout'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -164,12 +164,12 @@ router.delete('/products/:productId', protect, authorize('farmer'), async (req, 
       });
     }
 
-    product.status = 'removed';
-    await product.save();
+    // Delete the product completely
+    await Product.deleteOne({ productId: req.params.productId });
 
     res.json({
       success: true,
-      message: 'Product removed successfully',
+      message: 'Product deleted permanently from system',
     });
   } catch (error) {
     res.status(500).json({

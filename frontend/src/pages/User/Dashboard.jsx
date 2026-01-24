@@ -4,6 +4,7 @@ import './Dashboard.css';
 
 const UserDashboard = () => {
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showFarmerForm, setShowFarmerForm] = useState(false);
   const [farmerForm, setFarmerForm] = useState({
@@ -21,6 +22,7 @@ const UserDashboard = () => {
 
   useEffect(() => {
     fetchProducts();
+    fetchCart();
   }, [filters]);
 
   const fetchProducts = async (currentFilters = filters) => {
@@ -39,12 +41,35 @@ const UserDashboard = () => {
     }
   };
 
+  const fetchCart = async () => {
+    try {
+      const res = await axios.get('/api/cart');
+      setCart(res.data.cart);
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+    }
+  };
+
   const addToCart = async (productId) => {
     try {
       await axios.post('/api/cart/add', { productId, quantity: 1 });
       alert('Added to cart!');
+      fetchCart(); // Refresh cart after adding
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to add to cart');
+    }
+  };
+
+  const removeFromCart = async (productId) => {
+    console.log('Attempting to remove from cart:', productId);
+    try {
+      const response = await axios.delete(`/api/cart/${productId}`);
+      console.log('Remove from cart response:', response.data);
+      alert('Removed from cart!');
+      fetchCart(); // Refresh cart after removing
+    } catch (error) {
+      console.error('Error removing from cart:', error.response?.data);
+      alert(error.response?.data?.message || 'Failed to remove from cart');
     }
   };
 
@@ -120,28 +145,47 @@ const UserDashboard = () => {
       </div>
 
       <div className="products-grid">
-        {products.map((product) => (
-          <div key={product._id} className="product-card">
-            <div className="product-info">
-              <h3>{product.name}</h3>
-              <p>Type: {product.productType}</p>
-              <p>Quantity: {product.quantity}</p>
-              <p>Quality: {product.quality}</p>
-              <p>Price: ₹{product.finalPrice}</p>
-              <p>Location: {product.location}</p>
-              <p>Seller: {product.userId?.name || 'Unknown'}</p>
+        {products.map((product) => {
+          const isInCart = cart?.items?.some(item => 
+            item.product._id === product._id || 
+            item.product === product._id ||
+            (item.product && item.product.toString() === product._id)
+          );
+          
+          return (
+            <div key={product._id} className="product-card">
+              <div className="product-info">
+                <h3>{product.name}</h3>
+                <p>Type: {product.productType}</p>
+                <p>Quantity: {product.quantity}</p>
+                <p>Quality: {product.quality}</p>
+                <p>Price: ₹{product.finalPrice}</p>
+                <p>Location: {product.location}</p>
+                <p>Seller: {product.userId?.name || 'Unknown'}</p>
+                {isInCart && <p style={{ color: '#28a745', fontWeight: 'bold' }}>✓ In Cart</p>}
+              </div>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                {!isInCart ? (
+                  <button
+                    onClick={() => addToCart(product.productId)}
+                    className="btn-primary"
+                    style={{ flex: 1 }}
+                  >
+                    Add to Cart
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => removeFromCart(product._id)}
+                    className="btn-danger"
+                    style={{ flex: 1 }}
+                  >
+                    Remove from Cart
+                  </button>
+                )}
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-              <button
-                onClick={() => addToCart(product.productId)}
-                className="btn-primary"
-                style={{ flex: 1 }}
-              >
-                Add to Cart
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {showFarmerForm && (

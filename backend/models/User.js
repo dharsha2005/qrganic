@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema(
     farmerApplication: {
       status: {
         type: String,
-        enum: ['none', 'pending', 'approved', 'rejected'],
+        enum: ['none', 'pending', 'approved', 'rejected', 'removed'],
         default: 'none',
       },
       farmingType: String,

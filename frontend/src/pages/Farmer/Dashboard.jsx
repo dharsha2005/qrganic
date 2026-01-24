@@ -83,12 +83,12 @@ const FarmerDashboard = () => {
   };
 
   const handleRemoveProduct = async (productId) => {
-    if (window.confirm('Are you sure you want to remove this product?')) {
+    if (window.confirm('Are you sure you want to permanently delete this product? This action cannot be undone.')) {
       try {
         await axios.delete(`/api/farmer/products/${productId}`);
         fetchMyProducts();
         fetchAllProducts();
-        alert('Product removed successfully!');
+        alert('Product deleted permanently from system!');
       } catch (error) {
         alert(error.response?.data?.message || 'Error removing product');
       }

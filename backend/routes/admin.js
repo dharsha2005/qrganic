@@ -17,7 +17,7 @@ router.get('/dashboard', protect, authorize('admin'), async (req, res) => {
     const products = await Product.find().countDocuments();
 
     const allUsers = await User.find().select('name email role userId address contact fpoId farmerApplication').limit(50);
-    const allProducts = await Product.find().limit(50); // Removed .populate('userId', 'name')
+    const allProducts = await Product.find().select('name quantity quality userId productId').limit(50);
 
     res.json({
       success: true,
@@ -217,6 +217,154 @@ router.post('/farmer', protect, authorize('admin'), async (req, res) => {
         email: farmer.email,
         role: farmer.role,
       },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// @route   DELETE /api/admin/users/:userId
+// @desc    Remove a user (any role)
+// @access  Private (Admin)
+router.delete('/users/:userId', protect, authorize('admin'), async (req, res) => {
+  try {
+    const user = await User.findOne({ userId: req.params.userId });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // If user is a farmer, remove their products
+    if (user.role === 'farmer') {
+      await Product.deleteMany({ userId: req.params.userId });
+    }
+
+    // If user is an FPO, update associated farmers
+    if (user.role === 'fpo') {
+      await User.updateMany(
+        { fpoId: req.params.userId },
+        { $unset: { fpoId: 1 } }
+      );
+    }
+
+    await User.deleteOne({ userId: req.params.userId });
+
+    res.json({
+      success: true,
+      message: 'User removed successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// @route   DELETE /api/admin/products/:productId
+// @desc    Remove a product
+// @access  Private (Admin)
+router.delete('/products/:productId', protect, authorize('admin'), async (req, res) => {
+  try {
+    const product = await Product.findOne({ productId: req.params.productId });
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+
+    await Product.deleteOne({ productId: req.params.productId });
+
+    res.json({
+      success: true,
+      message: 'Product deleted permanently from system',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// @route   DELETE /api/admin/fpos/:fpoId
+// @desc    Remove an FPO
+// @access  Private (Admin)
+router.delete('/fpos/:fpoId', protect, authorize('admin'), async (req, res) => {
+  try {
+    const fpo = await User.findOne({ userId: req.params.fpoId, role: 'fpo' });
+
+    if (!fpo) {
+      return res.status(404).json({
+        success: false,
+        message: 'FPO not found',
+      });
+    }
+
+    if (fpo.role !== 'fpo') {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot remove user - not an FPO',
+      });
+    }
+
+    // Update all farmers associated with this FPO
+    await User.updateMany(
+      { fpoId: req.params.fpoId },
+      { $unset: { fpoId: 1 } }
+    );
+
+    await User.deleteOne({ userId: req.params.fpoId });
+
+    res.json({
+      success: true,
+      message: 'FPO removed successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// @route   DELETE /api/admin/farmers/:farmerId
+// @desc    Remove a farmer and their products
+// @access  Private (Admin)
+router.delete('/farmers/:farmerId', protect, authorize('admin'), async (req, res) => {
+  try {
+    const farmer = await User.findOne({ userId: req.params.farmerId, role: 'farmer' });
+
+    if (!farmer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Farmer not found',
+      });
+    }
+
+    if (farmer.role !== 'farmer') {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot remove user - not a farmer',
+      });
+    }
+
+    // Remove all products from this farmer
+    await Product.deleteMany({ userId: req.params.farmerId });
+
+    await User.deleteOne({ userId: req.params.farmerId });
+
+    res.json({
+      success: true,
+      message: 'Farmer and their products removed successfully',
     });
   } catch (error) {
     res.status(500).json({

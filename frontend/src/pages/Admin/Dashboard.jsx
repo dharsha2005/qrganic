@@ -67,6 +67,67 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleRemoveUser = async (userId) => {
+    console.log('Attempting to remove user:', userId);
+    if (window.confirm('Are you sure you want to remove this user? This action cannot be undone.')) {
+      try {
+        const response = await axios.delete(`/api/admin/users/${userId}`);
+        console.log('Remove user response:', response.data);
+        alert('User removed successfully!');
+        fetchDashboardData();
+        fetchFPOs();
+      } catch (error) {
+        console.error('Error removing user:', error.response?.data);
+        alert(error.response?.data?.message || 'Error removing user');
+      }
+    }
+  };
+
+  const handleRemoveProduct = async (productId) => {
+    console.log('Attempting to remove product:', productId);
+    if (window.confirm('Are you sure you want to remove this product? This action cannot be undone.')) {
+      try {
+        const response = await axios.delete(`/api/admin/products/${productId}`);
+        console.log('Remove product response:', response.data);
+        alert('Product deleted permanently from system!');
+        fetchDashboardData();
+      } catch (error) {
+        console.error('Error removing product:', error.response?.data);
+        alert(error.response?.data?.message || 'Error removing product');
+      }
+    }
+  };
+
+  const handleRemoveFPO = async (fpoId) => {
+    if (window.confirm('Are you sure you want to remove this FPO? This will also remove all associations with farmers. This action cannot be undone.')) {
+      try {
+        const response = await axios.delete(`/api/admin/fpos/${fpoId}`);
+        console.log('Remove FPO response:', response.data);
+        alert('FPO removed successfully!');
+        fetchDashboardData();
+        fetchFPOs();
+      } catch (error) {
+        console.error('Error removing FPO:', error.response?.data);
+        alert(error.response?.data?.message || 'Error removing FPO');
+      }
+    }
+  };
+
+  const handleRemoveFarmer = async (farmerId) => {
+    console.log('Attempting to remove farmer:', farmerId);
+    if (window.confirm('Are you sure you want to remove this farmer? This will also remove all their products. This action cannot be undone.')) {
+      try {
+        const response = await axios.delete(`/api/admin/farmers/${farmerId}`);
+        console.log('Remove farmer response:', response.data);
+        alert('Farmer removed successfully!');
+        fetchDashboardData();
+      } catch (error) {
+        console.error('Error removing farmer:', error.response?.data);
+        alert(error.response?.data?.message || 'Error removing farmer');
+      }
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -84,10 +145,6 @@ const AdminDashboard = () => {
             <h2>Users and profiles</h2>
             <span className="count">{stats.users + stats.farmers + stats.fpos} total</span>
           </div>
-          <div className="panel-actions">
-            <button onClick={() => setShowAddFPO(true)} className="btn-primary">Add FPO</button>
-            <button onClick={() => setShowAddFarmer(true)} className="btn-primary">Add Farmer</button>
-          </div>
           <div className="user-list">
             {allUsers.map((user) => (
               <div key={user._id} className="user-card">
@@ -98,6 +155,12 @@ const AdminDashboard = () => {
                   <p>Contact: {user.contact || '—'}</p>
                   <p>FPO: {user.fpoId || '—'}</p>
                 </div>
+                <button 
+                  onClick={() => handleRemoveUser(user.userId)} 
+                  className="btn-danger"
+                >
+                  Remove
+                </button>
               </div>
             ))}
           </div>
@@ -117,7 +180,71 @@ const AdminDashboard = () => {
                   <p>Quality: {product.quality}</p>
                   <p>Seller: {product.userId?.name || 'Unknown'}</p>
                 </div>
-                <button className="btn-danger">Remove</button>
+                <button 
+                  onClick={() => handleRemoveProduct(product.productId)} 
+                  className="btn-danger"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="dashboard-panel">
+          <div className="panel-header">
+            <h2>FPOs</h2>
+            <span className="count">{stats.fpos} total</span>
+          </div>
+          <div className="panel-actions">
+            <button onClick={() => setShowAddFPO(true)} className="btn-primary">Add FPO</button>
+          </div>
+          <div className="user-list">
+            {fpos.map((fpo) => (
+              <div key={fpo._id} className="user-card">
+                <div className="user-info">
+                  <h3>{fpo.name}</h3>
+                  <p>Role: {fpo.role}</p>
+                  <p>ID: {fpo.userId}</p>
+                  <p>Contact: {fpo.contact || '—'}</p>
+                  <p>Address: {fpo.address}</p>
+                </div>
+                <button 
+                  onClick={() => handleRemoveFPO(fpo.userId)} 
+                  className="btn-danger"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="dashboard-panel">
+          <div className="panel-header">
+            <h2>Farmers</h2>
+            <span className="count">{stats.farmers} total</span>
+          </div>
+          <div className="panel-actions">
+            <button onClick={() => setShowAddFarmer(true)} className="btn-primary">Add Farmer</button>
+          </div>
+          <div className="user-list">
+            {allUsers.filter(user => user.role === 'farmer').map((farmer) => (
+              <div key={farmer._id} className="user-card">
+                <div className="user-info">
+                  <h3>{farmer.name}</h3>
+                  <p>Role: {farmer.role}</p>
+                  <p>ID: {farmer.userId}</p>
+                  <p>Contact: {farmer.contact || '—'}</p>
+                  <p>FPO: {farmer.fpoId || '—'}</p>
+                  <p>Address: {farmer.address || '—'}</p>
+                </div>
+                <button 
+                  onClick={() => handleRemoveFarmer(farmer.userId)} 
+                  className="btn-danger"
+                >
+                  Remove
+                </button>
               </div>
             ))}
           </div>

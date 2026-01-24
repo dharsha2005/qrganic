@@ -22,6 +22,7 @@ const FPODashboard = () => {
         axios.get('/api/fpo/products'),
         axios.get('/api/fpo/products/expired'),
       ]);
+      console.log('Farmers data received:', farmersRes.data.farmers);
       setApplications(appsRes.data.applications);
       setFarmers(farmersRes.data.farmers);
       setProducts(productsRes.data.products);
@@ -56,22 +57,25 @@ const FPODashboard = () => {
   };
 
   const handleRemoveFarmer = async (userId) => {
+    console.log('Attempting to remove farmer with userId:', userId);
     if (window.confirm('Are you sure you want to remove this farmer? This action cannot be undone.')) {
       try {
-        await axios.put(`/api/fpo/farmers/${userId}/remove`);
+        const response = await axios.put(`/api/fpo/farmers/${userId}/remove`);
+        console.log('Remove farmer response:', response.data);
         alert('Farmer removed successfully!');
         fetchData();
       } catch (error) {
+        console.error('Error removing farmer:', error.response?.data);
         alert(error.response?.data?.message || 'Error removing farmer');
       }
     }
   };
 
   const handleRemoveProduct = async (productId) => {
-    if (window.confirm('Are you sure you want to remove this expired product?')) {
+    if (window.confirm('Are you sure you want to permanently delete this product? This action cannot be undone.')) {
       try {
         await axios.put(`/api/fpo/products/${productId}/remove`);
-        alert('Product removed successfully!');
+        alert('Product deleted permanently from system!');
         fetchData();
       } catch (error) {
         alert(error.response?.data?.message || 'Error removing product');

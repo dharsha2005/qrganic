@@ -129,10 +129,14 @@ router.put('/applications/:userId/reject', protect, authorize('fpo'), async (req
 // @access  Private (FPO)
 router.get('/farmers', protect, authorize('fpo'), async (req, res) => {
   try {
+    console.log('FPO userId requesting farmers:', req.user.userId);
     const farmers = await User.find({
       role: 'farmer',
       fpoId: req.user.userId,
     }).select('name email userId address contact farmerApplication');
+    
+    console.log('Farmers found:', farmers.length);
+    console.log('Farmer details:', farmers.map(f => ({ userId: f.userId, name: f.name, role: f.role })));
 
     res.json({
       success: true,
@@ -140,6 +144,7 @@ router.get('/farmers', protect, authorize('fpo'), async (req, res) => {
       farmers,
     });
   } catch (error) {
+    console.error('Error fetching farmers:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -217,9 +222,8 @@ router.put('/products/:productId/remove', protect, authorize('fpo'), async (req,
       });
     }
 
-    product.status = 'removed';
-    product.certificationStatus = 'removed';
-    await product.save();
+    // Delete the product completely
+    await Product.deleteOne({ productId: req.params.productId });
 
     // Send email alert
     const farmer = await User.findOne({ userId: product.userId });
@@ -227,14 +231,14 @@ router.put('/products/:productId/remove', protect, authorize('fpo'), async (req,
       const emailData = emailTemplates.productExpired(req.user.name, product.name, farmer.name);
       await sendEmail({
         email: farmer.email,
-        subject: emailData.subject,
-        html: emailData.html,
+        subject: `Product Removed: ${product.name}`,
+        html: `<p>Dear ${farmer.name},</p><p>Your product "${product.name}" has been removed by FPO ${req.user.name}.</p><p>If you have any questions, please contact the FPO.</p>`,
       });
     }
 
     res.json({
       success: true,
-      message: 'Product removed successfully',
+      message: 'Product deleted permanently from system',
     });
   } catch (error) {
     res.status(500).json({
@@ -249,7 +253,11 @@ router.put('/products/:productId/remove', protect, authorize('fpo'), async (req,
 // @access  Private (FPO)
 router.put('/farmers/:userId/remove', protect, authorize('fpo'), async (req, res) => {
   try {
+    console.log('FPO attempting to remove farmer:', req.params.userId);
+    console.log('FPO userId:', req.user.userId);
+    
     const farmer = await User.findOne({ userId: req.params.userId });
+    console.log('Found farmer:', farmer ? { userId: farmer.userId, name: farmer.name, role: farmer.role, fpoId: farmer.fpoId } : 'Not found');
 
     if (!farmer) {
       return res.status(404).json({
@@ -258,7 +266,15 @@ router.put('/farmers/:userId/remove', protect, authorize('fpo'), async (req, res
       });
     }
 
+    if (farmer.role !== 'farmer') {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot remove user - not a farmer',
+      });
+    }
+
     if (farmer.fpoId !== req.user.userId) {
+      console.log('Authorization failed: farmer.fpoId =', farmer.fpoId, 'FPO userId =', req.user.userId);
       return res.status(403).json({
         success: false,
         message: 'Not authorized to remove this farmer',

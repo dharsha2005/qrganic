@@ -131,17 +131,36 @@ router.put('/:itemId', protect, async (req, res) => {
 router.delete('/:itemId', protect, async (req, res) => {
     try {
         const productObjectId = req.params.itemId;
+
+        // Use atomic update to remove item
+        const cart = await Cart.findOneAndUpdate(
+            { userId: req.user.userId },
+            { $pull: { items: { product: productObjectId } } },
+            { new: true }
+        ).populate('items.product');
+
+        if (!cart) return res.status(404).json({ success: false, message: 'Cart not found' });
+
+        res.json({ success: true, cart });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// @route   DELETE /api/cart
+// @desc    Clear entire cart
+// @access  Private
+router.delete('/', protect, async (req, res) => {
+    try {
         const cart = await Cart.findOne({ userId: req.user.userId });
 
         if (!cart) return res.status(404).json({ success: false, message: 'Cart not found' });
 
-        cart.items = cart.items.filter(item => item.product.toString() !== productObjectId);
-
+        cart.items = [];
         await cart.save();
-        await cart.populate('items.product');
 
         res.json({ success: true, cart });
-
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
