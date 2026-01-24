@@ -15,6 +15,41 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
+  // Setup axios interceptors for better error handling
+  useEffect(() => {
+    const requestInterceptor = axios.interceptors.request.use(
+      (config) => {
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
+    const responseInterceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        // Don't automatically logout on network errors
+        if (!error.response && error.code === 'NETWORK_ERROR') {
+          console.log('Network error detected, keeping user logged in');
+          return Promise.reject(error);
+        }
+        // Only logout on 401 Unauthorized
+        if (error.response && error.response.status === 401) {
+          console.log('Token expired, logging out');
+          logout();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.request.eject(requestInterceptor);
+      axios.interceptors.response.eject(responseInterceptor);
+    };
+  }, [token]);
+
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -26,18 +61,30 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get('/api/auth/me');
+      // Add timeout to prevent hanging
+      const response = await Promise.race([
+        axios.get('/api/auth/me'),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Request timeout')), 5000)
+        )
+      ]);
       setUser(response.data.user);
       localStorage.setItem('user', JSON.stringify(response.data.user)); // Sync persistent storage
     } catch (error) {
       console.error('Error fetching user:', error);
       // Only logout if token is invalid (401)
       if (error.response && error.response.status === 401) {
+        console.log('Token is invalid, logging out');
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setToken(null);
         setUser(null);
         delete axios.defaults.headers.common['Authorization'];
+      }
+      // If it's a network error, server error, or timeout, keep the user logged in with cached data
+      else {
+        console.log('Network/server/timeout error, keeping user logged in with cached data');
+        // Don't logout, keep existing user state from localStorage
       }
     } finally {
       setLoading(false);
