@@ -4,6 +4,8 @@ import { AuthContext } from '../context/AuthContext';
 import './Login.css';
 
 const Login = () => {
+  console.log('Login component loaded');
+  
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const { login } = useContext(AuthContext);

@@ -4,6 +4,8 @@ import { AuthContext } from '../context/AuthContext';
 import './Register.css';
 
 const Register = () => {
+  console.log('Register component loaded');
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
