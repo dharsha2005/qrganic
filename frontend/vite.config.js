@@ -2,7 +2,19 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'copy-redirects',
+      writeBundle() {
+        this.emitFile({
+          type: 'asset',
+          fileName: '_redirects',
+          source: '/*    /index.html   200'
+        });
+      }
+    }
+  ],
   server: {
     port: 5173,
     proxy: {
