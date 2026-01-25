@@ -26,8 +26,22 @@
   max-width: 1400px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
+}
+
+@media (max-width: 480px) {
+  .user-dashboard {
+    padding: 20px 10px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 32px;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .product-card {
@@ -91,4 +105,3 @@
   color: var(--text-light);
   font-size: 18px;
 }
-

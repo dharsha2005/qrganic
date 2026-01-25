@@ -1,11 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Register.css';
 
 const Register = () => {
   console.log('🔴 REGISTER COMPONENT RENDERED');
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -22,6 +22,14 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Redirect if already logged in
+  const { user } = useContext(AuthContext);
+  useEffect(() => {
+    if (user) {
+      navigate('/user');
+    }
+  }, [user, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -33,7 +41,7 @@ const Register = () => {
 
     const { confirmPassword, ...registerData } = formData;
     console.log('🔴 Attempting registration with:', registerData.email);
-    
+
     // Always register as 'user' by default
     const result = await register({ ...registerData, role: 'user' });
     console.log('🔴 Register result:', result);

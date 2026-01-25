@@ -1,11 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Login.css';
 
 const Login = () => {
   console.log('🔵 LOGIN COMPONENT RENDERED');
-  
+
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const { login } = useContext(AuthContext);
@@ -15,14 +15,29 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Redirect if already logged in
+  const { user } = useContext(AuthContext);
+  useEffect(() => {
+    if (user) {
+      const roleRoutes = {
+        admin: '/admin',
+        farmer: '/farmer',
+        fpo: '/fpo',
+        user: '/user',
+      };
+      const targetRoute = roleRoutes[user.role] || '/user';
+      navigate(targetRoute);
+    }
+  }, [user, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     console.log('🔵 Attempting login with:', formData.email);
-    
+
     const result = await login(formData.email, formData.password);
     console.log('🔵 Login result:', result);
-    
+
     if (result.success) {
       console.log('🔵 Login successful, user:', result.user);
       const roleRoutes = {

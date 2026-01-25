@@ -134,3 +134,27 @@
   border-color: var(--primary-green);
 }
 
+
+@media (max-width: 768px) {
+  .app {
+    padding-bottom: 60px; /* Space for bottom nav or just breathing room */
+  }
+  
+  .card {
+    padding: 15px;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-danger {
+    width: 100%; /* Full width buttons on mobile usually look better */
+    margin-bottom: 10px;
+    display: block; /* Ensure they take full width */
+  }
+
+  .input-field, .select-field {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  h1 { font-size: 24px; }
+  h2 { font-size: 20px; }
+  h3 { font-size: 18px; }
+}

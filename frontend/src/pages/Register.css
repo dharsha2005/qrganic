@@ -11,8 +11,16 @@
   border-radius: 12px;
   padding: 40px;
   width: 100%;
+  width: 90%;
   max-width: 500px;
   border: 1px solid var(--border-color);
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 20px;
+    width: 95%;
+  }
 }
 
 .register-card h1 {
@@ -53,4 +61,3 @@
 .login-link a:hover {
   text-decoration: underline;
 }
-
