@@ -58,11 +58,12 @@ router.post('/products', protect, authorize('farmer'), async (req, res) => {
     const fpo = await User.findOne({ userId: req.user.fpoId });
     if (fpo) {
       const emailData = emailTemplates.productUploaded(req.user.name, name, fpo.name);
-      await sendEmail({
+      // Trigger email asynchronously
+      sendEmail({
         email: fpo.email,
         subject: emailData.subject,
         html: emailData.html,
-      });
+      }).catch(err => console.error('Product upload email error:', err));
     }
 
     res.status(201).json({

@@ -32,7 +32,7 @@ app.use(cors({
 
 // Add timeout middleware
 app.use((req, res, next) => {
-  res.setTimeout(10000, () => {
+  res.setTimeout(30000, () => {
     console.log('Request timeout:', req.method, req.url);
     res.status(408).json({ 
       success: false, 
