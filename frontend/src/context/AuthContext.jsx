@@ -1,10 +1,14 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Configure axios with timeout
+// Configure axios with timeout and base URL
 const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
   timeout: 10000, // 10 second timeout
 });
+
+// Set global axios base URL as well
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // Initialize tokens from localStorage immediately
 const initialToken = localStorage.getItem('token');
