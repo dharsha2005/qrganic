@@ -101,8 +101,26 @@ const productSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+
+// Virtual population for seller (User)
+productSchema.virtual('seller', {
+  ref: 'User',
+  localField: 'userId',
+  foreignField: 'userId',
+  justOne: true
+});
+
+// Virtual population for FPO (User)
+productSchema.virtual('fpo', {
+  ref: 'User',
+  localField: 'fpoId',
+  foreignField: 'userId',
+  justOne: true
+});
 
 // Generate productId before saving
 productSchema.pre('save', function (next) {

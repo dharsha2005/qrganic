@@ -210,7 +210,8 @@ const PurchaseHistory = () => {
                     purchases.map((log) => (
                         <div key={log._id} className="product-card" style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '20px' }}>
                             <div className="product-info" style={{ flex: 1 }}>
-                                <h3>Transaction ID: {log.logId}</h3>
+                                <h3>{log.productName || 'Product'}</h3>
+                                <p>Transaction ID: {log.logId}</p>
                                 {/* Since Log stores snapshot, we use that. Log doesn't store Product Name directly? 
                                     Wait, Log schema has: productId, initialPrice, finalPrice. 
                                     It does NOT have productName. 

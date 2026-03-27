@@ -1,6 +1,18 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Configure axios with timeout
+const api = axios.create({
+  timeout: 10000, // 10 second timeout
+});
+
+// Initialize tokens from localStorage immediately
+const initialToken = localStorage.getItem('token');
+if (initialToken) {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${initialToken}`;
+  api.defaults.headers.common['Authorization'] = `Bearer ${initialToken}`;
+}
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -15,44 +27,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
-  // Setup axios interceptors for better error handling
-  useEffect(() => {
-    const requestInterceptor = axios.interceptors.request.use(
-      (config) => {
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
-
-    const responseInterceptor = axios.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        // Don't automatically logout on network errors
-        if (!error.response && error.code === 'NETWORK_ERROR') {
-          console.log('Network error detected, keeping user logged in');
-          return Promise.reject(error);
-        }
-        // Only logout on 401 Unauthorized
-        if (error.response && error.response.status === 401) {
-          console.log('Token expired, logging out');
-          logout();
-        }
-        return Promise.reject(error);
-      }
-    );
-
-    return () => {
-      axios.interceptors.request.eject(requestInterceptor);
-      axios.interceptors.response.eject(responseInterceptor);
-    };
-  }, [token]);
-
+  // Fetch user data if token exists
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       fetchUser();
     } else {
       setLoading(false);
@@ -63,7 +40,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Add timeout to prevent hanging
       const response = await Promise.race([
-        axios.get('/api/auth/me'),
+        api.get('/api/auth/me'),
         new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Request timeout')), 5000)
         )
@@ -79,7 +56,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user');
         setToken(null);
         setUser(null);
-        delete axios.defaults.headers.common['Authorization'];
+        delete api.defaults.headers.common['Authorization'];
       }
       // If it's a network error, server error, or timeout, keep the user logged in with cached data
       else {
@@ -94,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       console.log('🟢 AuthContext: Making login request to /api/auth/login');
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await api.post('/api/auth/login', { email, password });
       console.log('🟢 AuthContext: Login response:', response.data);
       const { token: newToken, user: userData } = response.data;
 
@@ -103,7 +80,11 @@ export const AuthProvider = ({ children }) => {
 
       setToken(newToken);
       setUser(userData);
+      
+      // Set headers synchronously to avoid race conditions
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      
       console.log('🟢 AuthContext: Login successful, user set to:', userData);
       return { success: true, user: userData };
     } catch (error) {
@@ -117,7 +98,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await axios.post('/api/auth/register', userData);
+      const response = await api.post('/api/auth/register', userData);
       const { token: newToken, user: newUser } = response.data;
 
       localStorage.setItem('token', newToken);
@@ -125,7 +106,11 @@ export const AuthProvider = ({ children }) => {
 
       setToken(newToken);
       setUser(newUser);
+      
+      // Set headers synchronously
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      
       return { success: true, user: newUser };
     } catch (error) {
       return {
@@ -141,6 +126,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     delete axios.defaults.headers.common['Authorization'];
+    delete api.defaults.headers.common['Authorization'];
   };
 
   return (

@@ -13,7 +13,7 @@ export const checkExpiredProducts = async () => {
     const expiredProducts = await Product.find({
       status: 'active',
       expirationDate: { $lte: now }
-    }).populate('userId', 'name email fpoId');
+    }).populate('seller', 'name email fpoId');
 
     console.log(`Found ${expiredProducts.length} expired products`);
 
@@ -26,21 +26,21 @@ export const checkExpiredProducts = async () => {
       console.log(`Expired product: ${product.name} (${product.productId})`);
 
       // Send email notification to farmer
-      if (product.userId) {
+      if (product.seller) {
         const fpo = await User.findOne({ userId: product.fpoId });
         const emailData = emailTemplates.productExpired(
           fpo?.name || 'FPO',
           product.name,
-          product.userId.name
+          product.seller.name
         );
         
         await sendEmail({
-          email: product.userId.email,
+          email: product.seller.email,
           subject: emailData.subject,
           html: emailData.html
         });
 
-        console.log(`Sent expiration email to farmer: ${product.userId.email}`);
+        console.log(`Sent expiration email to farmer: ${product.seller.email}`);
       }
 
       // Send email notification to FPO
@@ -50,8 +50,9 @@ export const checkExpiredProducts = async () => {
           const emailData = emailTemplates.productExpired(
             fpo.name,
             product.name,
-            product.userId?.name || 'Farmer'
+            product.seller?.name || 'Farmer'
           );
+
           
           await sendEmail({
             email: fpo.email,

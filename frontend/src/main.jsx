@@ -5,7 +5,7 @@ import './index.css'
 import axios from 'axios';
 
 // Set the base URL for all Axios requests
-axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'https://qrgaanicc.onrender.com';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(

@@ -175,7 +175,7 @@ const FPODashboard = () => {
                   <p>Type: {product.productType}</p>
                   <p>Quantity: {product.quantity}</p>
                   <p>Price: ₹{product.finalPrice}</p>
-                  <p>Farmer: {product.userId?.name || 'Unknown'}</p>
+                  <p>Farmer: {product.seller?.name || 'Unknown'}</p>
                   <p>Status: {product.status}</p>
                 </div>
                 <div className="product-actions">
@@ -196,7 +196,7 @@ const FPODashboard = () => {
                   <h3>{product.name}</h3>
                   <p>Type: {product.productType}</p>
                   <p>Quantity: {product.quantity}</p>
-                  <p>Farmer: {product.userId?.name || 'Unknown'}</p>
+                  <p>Farmer: {product.seller?.name || 'Unknown'}</p>
                   <p>Expired: {new Date(product.expirationDate).toLocaleDateString()}</p>
                 </div>
                 <button onClick={() => handleRemoveProduct(product.productId)} className="btn-danger">

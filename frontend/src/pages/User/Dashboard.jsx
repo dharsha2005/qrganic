@@ -161,7 +161,7 @@ const UserDashboard = () => {
                 <p>Quality: {product.quality}</p>
                 <p>Price: ₹{product.finalPrice}</p>
                 <p>Location: {product.location}</p>
-                <p>Seller: {product.userId?.name || 'Unknown'}</p>
+                <p>Seller: {product.seller?.name || 'Unknown'}</p>
                 {isInCart && <p style={{ color: '#28a745', fontWeight: 'bold' }}>✓ In Cart</p>}
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>

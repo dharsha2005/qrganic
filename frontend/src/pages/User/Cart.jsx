@@ -118,18 +118,21 @@ const Cart = () => {
     }
 
     // Calculate total safely based on current state (which might be optimistic)
-    const total = cart.items.reduce((sum, item) => sum + (item.product.finalPrice * item.quantity), 0);
+    const total = (cart?.items || []).reduce((sum, item) => {
+        if (!item.product) return sum;
+        return sum + (item.product.finalPrice * item.quantity);
+    }, 0);
 
     return (
         <div className="cart-page">
             <h1>Your Cart</h1>
             <div className="cart-container">
                 <div className="cart-items">
-                    {cart.items.map((item) => (
+                    {cart.items.filter(item => item.product).map((item) => (
                         <div key={item._id} className="cart-item">
                             <div className="item-details">
                                 <h3>{item.product.name}</h3>
-                                <p>Seller: {item.product.userId || 'Unknown'}</p> {/* Note: user.js getProducts didn't populate userId name. Cart populates product. We didn't populate userId deeper. */}
+                                <p>Seller: {item.product.seller?.name || 'Unknown'}</p> {/* Note: user.js getProducts didn't populate userId name. Cart populates product. We didn't populate userId deeper. */}
                                 <p>Price: ₹{item.product.finalPrice}</p>
                             </div>
                             <div className="item-actions">

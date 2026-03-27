@@ -32,15 +32,19 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('🔴 Form submitted!');
+    console.log('🔴 Form data:', formData);
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
+      console.log('🔴 Passwords do not match');
       setError('Passwords do not match');
       return;
     }
 
     const { confirmPassword, ...registerData } = formData;
     console.log('🔴 Attempting registration with:', registerData.email);
+    console.log('🔴 Registration data:', registerData);
 
     // Always register as 'user' by default
     const result = await register({ ...registerData, role: 'user' });
@@ -120,7 +124,11 @@ const Register = () => {
             onChange={handleChange}
             className="input-field"
           />
-          <button type="submit" className="btn-primary">
+          <button 
+            type="submit" 
+            className="btn-primary"
+            onClick={() => console.log('🔴 Button clicked!')}
+          >
             Register
           </button>
         </form>

@@ -166,7 +166,7 @@ const FarmerDashboard = () => {
                 <p>Quality: {product.quality}</p>
                 <p>Price: ₹{product.finalPrice}</p>
                 <p>Location: {product.location}</p>
-                <p>Seller: {product.userId?.name || 'Unknown'}</p>
+                <p>Seller: {product.seller?.name || 'Unknown'}</p>
                 <p>Expires: {new Date(new Date(product.harvestTime).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
               </div>
               <button 

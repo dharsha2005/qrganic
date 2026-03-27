@@ -129,14 +129,19 @@ router.put('/applications/:userId/reject', protect, authorize('fpo'), async (req
 // @access  Private (FPO)
 router.get('/farmers', protect, authorize('fpo'), async (req, res) => {
   try {
-    console.log('FPO userId requesting farmers:', req.user.userId);
+    const startTime = Date.now();
+    console.log('🟢 FPO userId requesting farmers:', req.user.userId);
+    
     const farmers = await User.find({
       role: 'farmer',
       fpoId: req.user.userId,
-    }).select('name email userId address contact farmerApplication');
+    })
+    .select('name email userId address contact farmerApplication')
+    .lean() // Use lean() for better performance
+    .limit(1000); // Add reasonable limit
     
-    console.log('Farmers found:', farmers.length);
-    console.log('Farmer details:', farmers.map(f => ({ userId: f.userId, name: f.name, role: f.role })));
+    const endTime = Date.now();
+    console.log('🟢 Farmers found:', farmers.length, 'in', endTime - startTime, 'ms');
 
     res.json({
       success: true,
@@ -144,7 +149,7 @@ router.get('/farmers', protect, authorize('fpo'), async (req, res) => {
       farmers,
     });
   } catch (error) {
-    console.error('Error fetching farmers:', error);
+    console.error('🟢 Error fetching farmers:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -158,6 +163,7 @@ router.get('/farmers', protect, authorize('fpo'), async (req, res) => {
 router.get('/products', protect, authorize('fpo'), async (req, res) => {
   try {
     const products = await Product.find({ fpoId: req.user.userId })
+      .populate('seller', 'name email contact')
       .sort({ createdAt: -1 });
 
     res.json({
@@ -186,7 +192,7 @@ router.get('/products/expired', protect, authorize('fpo'), async (req, res) => {
         { dueDate: { $lte: now } },
       ],
       status: 'active',
-    });
+    }).populate('seller', 'name email contact');
 
     res.json({
       success: true,

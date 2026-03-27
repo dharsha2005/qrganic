@@ -18,6 +18,10 @@ const logSchema = new mongoose.Schema(
       required: true,
       ref: 'Product',
     },
+    productName: {
+      type: String,
+      required: true,
+    },
     transactionType: {
       type: String,
       enum: ['bought', 'sold'],

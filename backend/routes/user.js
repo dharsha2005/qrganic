@@ -126,7 +126,9 @@ router.get('/products', protect, async (req, res) => {
       ];
     }
 
-    const products = await Product.find(query).sort({ createdAt: -1 });
+    const products = await Product.find(query)
+      .populate('seller', 'name email contact')
+      .sort({ createdAt: -1 });
 
     res.json({
       success: true,

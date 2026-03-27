@@ -29,16 +29,32 @@ app.use(cors({
   origin: true, // Allow any origin temporarily for debugging
   credentials: true
 }));
+
+// Add timeout middleware
+app.use((req, res, next) => {
+  res.setTimeout(10000, () => {
+    console.log('Request timeout:', req.method, req.url);
+    res.status(408).json({ 
+      success: false, 
+      message: 'Request timeout - please try again' 
+    });
+  });
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Database Connection
-// Database Connection
+// Database Connection with optimized settings
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(process.env.MONGODB_URI, {
+    maxPoolSize: 10, // Maintain up to 10 socket connections
+    serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+    socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+  })
   .then(() => {
-    console.log('✅ MongoDB Connected');
+    console.log('✅ MongoDB Connected with optimized settings');
     // Start product expiration checker
     scheduleExpirationCheck();
   })

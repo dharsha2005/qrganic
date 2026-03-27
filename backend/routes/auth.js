@@ -1,5 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
 
@@ -65,10 +66,12 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(' Login attempt for:', email);
 
-    // Check if user exists
-    const user = await User.findOne({ email });
+    // Check if user exists with lean() for better performance
+    const user = await User.findOne({ email }).lean();
     if (!user) {
+      console.log(' User not found:', email);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials',
@@ -76,8 +79,9 @@ router.post('/login', async (req, res) => {
     }
 
     // Check password
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log(' Password mismatch for:', email);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials',
@@ -85,6 +89,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = generateToken(user.userId);
+    console.log(' Login successful for:', email);
 
     res.json({
       success: true,
@@ -97,14 +102,13 @@ router.post('/login', async (req, res) => {
         role: user.role,
         address: user.address,
         contact: user.contact,
-        fpoId: user.fpoId,
-        farmerApplication: user.farmerApplication,
       },
     });
   } catch (error) {
+    console.error(' Login error:', error);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: 'Server error during login',
     });
   }
 });

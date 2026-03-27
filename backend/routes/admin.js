@@ -127,7 +127,7 @@ router.post('/fpo', protect, authorize('admin'), async (req, res) => {
     for (const admin of admins) {
       if (admin.email !== req.user.email) {
         const emailData = emailTemplates.fpoAdded(req.user.name, fpo.name, admins.map(a => a.name));
-        await sendEmail({
+        sendEmail({
           email: admin.email,
           subject: emailData.subject,
           html: emailData.html,
@@ -187,7 +187,7 @@ router.post('/farmer', protect, authorize('admin'), async (req, res) => {
       const fpo = await User.findOne({ userId: fpoId });
       if (fpo) {
         const emailData = emailTemplates.farmerAdded(req.user.name, farmer.name, fpo.name);
-        await sendEmail({
+        sendEmail({
           email: fpo.email,
           subject: emailData.subject,
           html: emailData.html,
@@ -200,7 +200,7 @@ router.post('/farmer', protect, authorize('admin'), async (req, res) => {
     for (const admin of admins) {
       if (admin.email !== req.user.email) {
         const emailData = emailTemplates.farmerAdded(req.user.name, farmer.name, 'System');
-        await sendEmail({
+        sendEmail({
           email: admin.email,
           subject: `New Farmer Added: ${farmer.name}`,
           html: emailData.html,
